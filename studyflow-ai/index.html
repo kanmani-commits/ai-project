@@ -1,0 +1,1045 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>StudyFlow AI — Turn Academic Overload into Action</title>
+  <meta name="description" content="AI Study Overload & Smart Schedule Assistant for students. Detect overload and create realistic priority-based study schedules.">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/responsive.css">
+  <!-- Chart.js via CDN (non-blocking with native canvas fallback) -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js" defer></script>
+</head>
+<body>
+  <div class="app-layout">
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar" id="app-sidebar">
+      <div class="sidebar-header">
+        <div class="brand">
+          <div class="brand-icon">⚡</div>
+          <div>
+            <div class="brand-title">StudyFlow AI</div>
+            <div class="brand-tagline">Turn Overload into Action</div>
+          </div>
+        </div>
+      </div>
+
+      <nav class="sidebar-nav">
+        <a href="#dashboard" class="nav-link active" data-tab="dashboard">
+          <span class="nav-icon">🏠</span> Dashboard
+        </a>
+        <a href="#tasks" class="nav-link" data-tab="tasks">
+          <span class="nav-icon">📋</span> Tasks
+        </a>
+        <a href="#subjects" class="nav-link" data-tab="subjects">
+          <span class="nav-icon">📚</span> Subjects
+        </a>
+        <a href="#schedule" class="nav-link" data-tab="schedule">
+          <span class="nav-icon">✨</span> Schedule
+        </a>
+        <a href="#focus" class="nav-link" data-tab="focus">
+          <span class="nav-icon">⏱️</span> Focus Mode
+        </a>
+        <a href="#analytics" class="nav-link" data-tab="analytics">
+          <span class="nav-icon">📊</span> Analytics
+        </a>
+        <a href="#settings" class="nav-link" data-tab="settings">
+          <span class="nav-icon">⚙️</span> Settings
+        </a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <button class="btn btn-sm btn-outline btn-open-ai-assistant" style="width: 100%; margin-bottom: 12px; color: #e2e8f0; border-color: rgba(255,255,255,0.15);">
+          🧠 Ask AI Assistant
+        </button>
+        <div class="project-badge">
+          <span>🎓</span> Project Better Tomorrow
+        </div>
+        <div>v2.0 • Offline-First Smart Engine</div>
+      </div>
+    </aside>
+
+    <!-- Main Workspace -->
+    <div class="main-content">
+      <!-- Top Application Header -->
+      <header class="top-header">
+        <div class="header-left">
+          <button class="mobile-menu-btn" id="mobile-menu-btn" aria-label="Toggle navigation">☰</button>
+          <div>
+            <h1 class="header-greeting-title">
+              <span id="header-greeting">Hello</span>, <span id="header-student-name">Student</span> 👋
+            </h1>
+            <div class="header-subtitle" id="header-subtitle">
+              Let's make today's study plan manageable.
+            </div>
+          </div>
+        </div>
+
+        <div class="header-right">
+          <div class="header-date-badge">
+            <span>📅</span> <span id="header-date">Today</span>
+          </div>
+
+          <!-- Theme Toggle Switch -->
+          <button class="theme-toggle-btn" id="theme-toggle-btn" title="Toggle Light/Dark Theme" aria-label="Toggle theme">
+            <span id="theme-toggle-icon">💻</span>
+            <span id="theme-toggle-text">Theme</span>
+          </button>
+
+          <button class="btn btn-outline btn-sm btn-open-add-task">
+            + Add Task
+          </button>
+          <button class="btn btn-primary btn-sm btn-generate-schedule">
+            ✨ Generate Schedule
+          </button>
+        </div>
+      </header>
+
+      <!-- Content Area -->
+      <main class="content-body">
+
+        <!-- ==================================================
+             VIEW: DASHBOARD
+        ================================================== -->
+        <section id="view-dashboard" class="view-section">
+          <!-- Hero Section: Workload Meter & Actions -->
+          <div class="dashboard-hero">
+            <!-- Workload Meter Card -->
+            <div class="workload-card">
+              <div class="workload-header">
+                <div class="workload-title-group">
+                  <h2>Academic Workload: <span id="workload-status-label" style="color: var(--color-primary);">LOW</span></h2>
+                  <p>Real-time analysis of pending assignments, exams, and projects</p>
+                </div>
+                <div id="workload-badge" class="badge badge-manageable">
+                  LOW: Manageable
+                </div>
+              </div>
+
+              <!-- Visual Progress Track -->
+              <div class="workload-meter-wrapper">
+                <div class="meter-track">
+                  <div class="meter-bar" id="workload-meter-bar" style="width: 30%; background-color: #10b981;"></div>
+                </div>
+                <div class="meter-scale-labels">
+                  <span class="scale-tick" id="tick-low">LOW (0–70%)</span>
+                  <span class="scale-tick" id="tick-med">MEDIUM (70–100%)</span>
+                  <span class="scale-tick" id="tick-high">HIGH (100–140%)</span>
+                  <span class="scale-tick" id="tick-crit">CRITICAL (&gt;140%)</span>
+                </div>
+              </div>
+
+              <div class="workload-footer">
+                <span class="workload-ratio" id="workload-ratio-text">0h pending / 4.0h daily capacity</span>
+                <span class="workload-desc" id="workload-description">Your workload is manageable.</span>
+              </div>
+            </div>
+
+            <!-- Dashboard CTA Card -->
+            <div class="dashboard-cta-card">
+              <div>
+                <span class="cta-tag">StudyFlow AI</span>
+                <h3 class="cta-title">Turn Academic Overload Into Action</h3>
+                <p class="cta-text">Calculate multi-factor priority scores and generate realistic study blocks with mandatory breaks.</p>
+              </div>
+              <div class="cta-actions">
+                <button class="btn btn-cta-primary btn-generate-schedule">
+                  ✨ Generate Smart Schedule
+                </button>
+                <button class="btn btn-cta-secondary btn-reschedule-day">
+                  ↻ Reschedule My Day
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Academic Overload Alert Banner (Conditional) -->
+          <div class="overload-alert-banner hidden" id="dashboard-overload-alert">
+            <div class="overload-icon">⚠️</div>
+            <div class="overload-content">
+              <h3>Academic Overload Detected</h3>
+              <p id="overload-alert-message">You have more pending work than available study hours before nearest deadlines.</p>
+              <ul class="overload-tips-list" id="overload-alert-tips">
+                <li>Start with highest-priority tasks.</li>
+                <li>Divide large projects into 50-minute blocks.</li>
+              </ul>
+            </div>
+          </div>
+
+          <!-- Summary Metric Cards -->
+          <div class="metrics-grid">
+            <div class="metric-card">
+              <div class="metric-icon-box icon-today">🎯</div>
+              <div class="metric-data">
+                <h3 id="metric-today-count">0</h3>
+                <span>Due Today</span>
+              </div>
+            </div>
+
+            <div class="metric-card">
+              <div class="metric-icon-box icon-week">📅</div>
+              <div class="metric-data">
+                <h3 id="metric-week-count">0</h3>
+                <span>Due This Week</span>
+              </div>
+            </div>
+
+            <div class="metric-card">
+              <div class="metric-icon-box icon-capacity">⏱️</div>
+              <div class="metric-data">
+                <h3 id="metric-daily-hours">4.0h</h3>
+                <span>Study Capacity / Day</span>
+              </div>
+            </div>
+
+            <div class="metric-card">
+              <div class="metric-icon-box icon-completed">✅</div>
+              <div class="metric-data">
+                <h3 id="metric-completed-count">0</h3>
+                <span>Completed Tasks</span>
+              </div>
+            </div>
+
+            <div class="metric-card">
+              <div class="metric-icon-box icon-overdue">⚠️</div>
+              <div class="metric-data">
+                <h3 id="metric-overdue-count">0</h3>
+                <span>Overdue Tasks</span>
+              </div>
+            </div>
+
+            <div class="metric-card">
+              <div class="metric-icon-box icon-week">🔥</div>
+              <div class="metric-data">
+                <h3 id="metric-streak-days">1 day</h3>
+                <span>Study Streak</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Dashboard Two Columns: Today's Study Plan & AI Smart Insights -->
+          <div class="dashboard-columns">
+            <!-- Left: Today's Focused Study Plan -->
+            <div class="card">
+              <div class="section-header-row">
+                <h3 class="section-title">
+                  <span>📅</span> Today's Study Plan
+                </h3>
+                <a href="#schedule" class="btn btn-sm btn-ghost nav-link" data-tab="schedule">View Full Timeline →</a>
+              </div>
+              <div class="plan-preview-list" id="dashboard-today-plan">
+                <!-- Populated dynamically -->
+              </div>
+              <div id="dashboard-plan-footer" style="margin-top: 16px; padding-top: 12px; border-top: 1px solid var(--color-border); font-size: 0.82rem; color: var(--color-text-muted); display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px;">
+                <span>Today's workload: <strong>0 hours</strong></span>
+                <span>Available capacity: <strong>4.0 hours</strong></span>
+                <span>Status: <strong>Manageable</strong></span>
+              </div>
+            </div>
+
+            <!-- Right: Smart Study Insights -->
+            <div class="card">
+              <div class="section-header-row">
+                <h3 class="section-title">
+                  <span>🧠</span> Smart Study Insights
+                </h3>
+                <button class="btn btn-sm btn-ghost btn-open-ai-assistant">Ask AI Assistant →</button>
+              </div>
+              <div class="coach-preview-list" id="dashboard-coach-preview">
+                <!-- Populated dynamically -->
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ==================================================
+             VIEW: TASKS
+        ================================================== -->
+        <section id="view-tasks" class="view-section hidden">
+          <div class="section-header-row">
+            <div>
+              <h2 class="header-greeting-title">Academic Tasks</h2>
+              <p class="header-subtitle">Multi-factor priority scoring based on deadlines, effort, and difficulty</p>
+            </div>
+            <button class="btn btn-primary btn-open-add-task">
+              + Add Academic Task
+            </button>
+          </div>
+
+          <!-- Tasks Toolbar -->
+          <div class="tasks-toolbar">
+            <div class="search-box">
+              <span>🔍</span>
+              <input type="text" id="tasks-search" placeholder="Search tasks, subjects, or notes...">
+            </div>
+
+            <div class="filter-pills-row">
+              <button class="task-filter-pill active" data-filter="all">All Tasks</button>
+              <button class="task-filter-pill" data-filter="active">Active</button>
+              <button class="task-filter-pill" data-filter="today">Due Today</button>
+              <button class="task-filter-pill" data-filter="this_week">This Week</button>
+              <button class="task-filter-pill" data-filter="in_progress">In Progress</button>
+              <button class="task-filter-pill" data-filter="completed">Completed</button>
+              <button class="task-filter-pill" data-filter="overdue">Overdue</button>
+            </div>
+
+            <div class="filter-selects-row">
+              <select id="tasks-subject-filter" class="filter-select">
+                <option value="all">All Subjects</option>
+              </select>
+
+              <select id="tasks-type-filter" class="filter-select">
+                <option value="all">All Types</option>
+                <option value="Assignment">Assignment</option>
+                <option value="Exam">Exam</option>
+                <option value="Project">Project</option>
+                <option value="Lab">Lab</option>
+                <option value="Revision">Revision</option>
+                <option value="Presentation">Presentation</option>
+                <option value="Other">Other</option>
+              </select>
+
+              <select id="tasks-difficulty-filter" class="filter-select">
+                <option value="all">All Difficulties</option>
+                <option value="Easy">Easy</option>
+                <option value="Medium">Medium</option>
+                <option value="Hard">Hard</option>
+                <option value="Very Hard">Very Hard</option>
+              </select>
+
+              <select id="tasks-priority-filter" class="filter-select">
+                <option value="all">All Priorities</option>
+                <option value="Critical">Critical</option>
+                <option value="High">High</option>
+                <option value="Medium">Medium</option>
+                <option value="Low">Low</option>
+              </select>
+
+              <select id="tasks-sort" class="filter-select">
+                <option value="priority">Sort by: AI Priority</option>
+                <option value="due_date">Sort by: Due Date</option>
+                <option value="hours_desc">Sort by: Longest Hours</option>
+                <option value="hours_asc">Sort by: Shortest Hours</option>
+                <option value="title">Sort by: Name</option>
+              </select>
+            </div>
+          </div>
+
+          <div style="margin-bottom: 14px; font-size: 0.85rem; color: var(--color-text-muted);">
+            Showing: <strong id="tasks-total-badge">0 tasks</strong>
+          </div>
+
+          <!-- Task Cards Grid -->
+          <div class="tasks-grid" id="tasks-list">
+            <!-- Populated dynamically -->
+          </div>
+
+          <!-- Empty State -->
+          <div class="empty-state hidden" id="tasks-empty-state">
+            <div class="empty-icon">📝</div>
+            <h3>No academic tasks found</h3>
+            <p>Add your first assignment, exam, or project to generate your realistic study schedule.</p>
+            <button class="btn btn-primary btn-open-add-task">+ Add First Task</button>
+          </div>
+        </section>
+
+        <!-- ==================================================
+             VIEW: SUBJECTS
+        ================================================== -->
+        <section id="view-subjects" class="view-section hidden">
+          <div class="section-header-row">
+            <div>
+              <h2 class="header-greeting-title">Academic Subjects</h2>
+              <p class="header-subtitle">Manage courses, weekly study targets, faculty details, and course progress</p>
+            </div>
+            <button class="btn btn-primary btn-open-add-subject">
+              + Add New Subject
+            </button>
+          </div>
+
+          <div class="subjects-grid" id="subjects-grid">
+            <!-- Populated dynamically -->
+          </div>
+        </section>
+
+        <!-- ==================================================
+             VIEW: SMART SCHEDULE
+        ================================================== -->
+        <section id="view-schedule" class="view-section hidden">
+          <div class="schedule-header-card">
+            <div class="schedule-header-info">
+              <h2>✨ Generated Smart Schedule</h2>
+              <p>Realistic 50-minute study blocks matched against your daily study capacity with mandatory breaks.</p>
+            </div>
+            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+              <button class="btn btn-primary btn-generate-schedule">
+                ✨ Regenerate Schedule
+              </button>
+              <button class="btn btn-outline btn-reschedule-day">
+                ↻ Reschedule My Day
+              </button>
+            </div>
+          </div>
+
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 10px;">
+            <div class="filter-pills-row">
+              <button class="task-filter-pill schedule-day-pill active" data-day-filter="all">This Week (All Days)</button>
+              <button class="task-filter-pill schedule-day-pill" data-day-filter="today">Today Only</button>
+              <button class="task-filter-pill schedule-day-pill" data-day-filter="tomorrow">Tomorrow Only</button>
+            </div>
+          </div>
+
+          <!-- AI Schedule Coach Banner -->
+          <div class="schedule-ai-banner">
+            <span style="font-size: 20px;">🧠</span>
+            <div id="schedule-ai-summary">
+              Schedule generated realistically based on student study preferences.
+            </div>
+          </div>
+
+          <!-- Multi-Day Columns Grid -->
+          <div class="schedule-columns-grid" id="schedule-days-container" style="margin-top: 24px;">
+            <!-- Populated dynamically -->
+          </div>
+
+          <!-- Schedule Empty State -->
+          <div class="empty-state hidden" id="schedule-empty-state" style="margin-top: 24px;">
+            <div class="empty-icon">📅</div>
+            <h3>No study blocks scheduled yet</h3>
+            <p>Click "Generate Smart Schedule" to let the AI organize your academic workload.</p>
+            <button class="btn btn-primary btn-generate-schedule">✨ Generate Smart Schedule</button>
+          </div>
+        </section>
+
+        <!-- ==================================================
+             VIEW: FOCUS MODE / POMODORO
+        ================================================== -->
+        <section id="view-focus" class="view-section hidden">
+          <div class="section-header-row">
+            <div>
+              <h2 class="header-greeting-title">Focus Mode & Pomodoro</h2>
+              <p class="header-subtitle">Deep academic study sprints with structured recovery breaks</p>
+            </div>
+          </div>
+
+          <div style="max-width: 600px; margin: 0 auto;">
+            <div class="pomodoro-box">
+              <div class="pomodoro-mode-pills">
+                <button class="pomo-pill active" data-mode="focus">🎯 Focus (25m)</button>
+                <button class="pomo-pill" data-mode="shortBreak">☕ Short Break (5m)</button>
+                <button class="pomo-pill" data-mode="longBreak">🌴 Long Break (15m)</button>
+              </div>
+
+              <div class="form-group" style="margin-bottom: 8px;">
+                <select id="pomo-task-selector" class="form-control" style="max-width: 380px; margin: 0 auto;">
+                  <option value="">-- Focus on General Study --</option>
+                </select>
+              </div>
+
+              <div class="pomo-display" id="pomo-timer-display">25:00</div>
+
+              <div class="focus-progress-track" style="margin-bottom: 24px;">
+                <div class="focus-progress-fill" id="pomo-timer-progress" style="width: 0%;"></div>
+              </div>
+
+              <div class="pomo-controls">
+                <button class="btn btn-primary btn-lg" id="btn-pomo-start">▶ Start Focus</button>
+                <button class="btn btn-outline btn-lg hidden" id="btn-pomo-pause">⏸ Pause</button>
+                <button class="btn btn-ghost" id="btn-pomo-reset">Reset</button>
+                <button class="btn btn-ghost" id="btn-pomo-skip">Skip ⏭</button>
+              </div>
+
+              <div class="pomo-stats-row">
+                <div>
+                  <div style="font-size: 1.25rem; font-weight: 700; color: var(--color-text-main);" id="pomo-stat-sessions">0</div>
+                  <span>Sessions Completed</span>
+                </div>
+                <div>
+                  <div style="font-size: 1.25rem; font-weight: 700; color: var(--color-text-main);" id="pomo-stat-today-mins">0m</div>
+                  <span>Today's Focus Time</span>
+                </div>
+                <div>
+                  <div style="font-size: 1.25rem; font-weight: 700; color: var(--color-text-main);" id="pomo-stat-total-mins">0m</div>
+                  <span>Total Time Studied</span>
+                </div>
+                <div>
+                  <div style="font-size: 1.25rem; font-weight: 700; color: var(--color-text-main);" id="pomo-stat-streak">1 days</div>
+                  <span>Current Streak</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ==================================================
+             VIEW: ANALYTICS
+        ================================================== -->
+        <section id="view-analytics" class="view-section hidden">
+          <div class="section-header-row">
+            <div>
+              <h2 class="header-greeting-title">Academic Analytics</h2>
+              <p class="header-subtitle">Real-time study hours, subject distributions, and completion velocity</p>
+            </div>
+          </div>
+
+          <!-- Analytics Metric Cards -->
+          <div class="metrics-grid">
+            <div class="metric-card">
+              <div class="metric-icon-box icon-completed">✅</div>
+              <div class="metric-data">
+                <h3 id="ana-completed-tasks">0 / 0</h3>
+                <span>Tasks Completed</span>
+              </div>
+            </div>
+
+            <div class="metric-card">
+              <div class="metric-icon-box icon-today">📈</div>
+              <div class="metric-data">
+                <h3 id="ana-completion-rate">0%</h3>
+                <span>Completion Rate</span>
+              </div>
+            </div>
+
+            <div class="metric-card">
+              <div class="metric-icon-box icon-capacity">⏱️</div>
+              <div class="metric-data">
+                <h3 id="ana-completed-hours">0h</h3>
+                <span>Study Hours Done</span>
+              </div>
+            </div>
+
+            <div class="metric-card">
+              <div class="metric-icon-box icon-overdue">⏳</div>
+              <div class="metric-data">
+                <h3 id="ana-pending-hours">0h</h3>
+                <span>Hours Remaining</span>
+              </div>
+            </div>
+
+            <div class="metric-card">
+              <div class="metric-icon-box icon-week">⚡</div>
+              <div class="metric-data">
+                <h3 id="ana-overload-rate">0%</h3>
+                <span>Workload Capacity Ratio</span>
+              </div>
+            </div>
+
+            <div class="metric-card">
+              <div class="metric-icon-box icon-today">🍅</div>
+              <div class="metric-data">
+                <h3 id="ana-focus-sessions">0</h3>
+                <span>Focus Sprints</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- 4 Actual Application Data Charts -->
+          <div class="analytics-top-grid">
+            <!-- 1. Weekly Hours Bar Chart -->
+            <div class="chart-card">
+              <div class="chart-header">
+                <div>
+                  <h3 class="section-title">Weekly Study Hours</h3>
+                  <p class="header-subtitle">Planned capacity vs scheduled study blocks</p>
+                </div>
+              </div>
+              <div class="chart-container">
+                <canvas id="chart-weekly-hours" width="480" height="230"></canvas>
+              </div>
+            </div>
+
+            <!-- 2. Subject Distribution Doughnut -->
+            <div class="chart-card">
+              <div class="chart-header">
+                <div>
+                  <h3 class="section-title">Workload by Subject</h3>
+                  <p class="header-subtitle">Hours required per academic course</p>
+                </div>
+              </div>
+              <div class="chart-container">
+                <canvas id="chart-subject-distribution" width="300" height="230"></canvas>
+              </div>
+            </div>
+
+            <!-- 3. Completed vs Pending Status -->
+            <div class="chart-card">
+              <div class="chart-header">
+                <div>
+                  <h3 class="section-title">Task Status Breakdown</h3>
+                  <p class="header-subtitle">Completed, In Progress, Not Started, and Overdue</p>
+                </div>
+              </div>
+              <div class="chart-container">
+                <canvas id="chart-status-donut" width="300" height="230"></canvas>
+              </div>
+            </div>
+
+            <!-- 4. Projected Workload Trend -->
+            <div class="chart-card">
+              <div class="chart-header">
+                <div>
+                  <h3 class="section-title">Workload Trend</h3>
+                  <p class="header-subtitle">Projected pending workload descent across study days</p>
+                </div>
+              </div>
+              <div class="chart-container">
+                <canvas id="chart-workload-trend" width="480" height="230"></canvas>
+              </div>
+            </div>
+          </div>
+
+          <!-- Subject Progress Breakdown List -->
+          <div class="subject-analytics-card">
+            <h3 class="section-title" style="margin-bottom: 16px;">
+              <span>📚</span> Subject Progress & Workload Balance
+            </h3>
+            <div id="analytics-subjects-bars">
+              <!-- Populated dynamically -->
+            </div>
+          </div>
+        </section>
+
+        <!-- ==================================================
+             VIEW: SETTINGS
+        ================================================== -->
+        <section id="view-settings" class="view-section hidden">
+          <div class="section-header-row">
+            <div>
+              <h2 class="header-greeting-title">Settings & Routine Constraints</h2>
+              <p class="header-subtitle">Configure daily study limits, preferred study periods, and data controls</p>
+            </div>
+          </div>
+
+          <form id="form-settings" class="settings-card">
+            <h3 class="section-title" style="margin-bottom: 16px;">Student Profile</h3>
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label" for="setting-name">Full Name *</label>
+                <input type="text" id="setting-name" class="form-control" required>
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="setting-course">Course / Degree</label>
+                <input type="text" id="setting-course" class="form-control">
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="setting-college">College / University</label>
+              <input type="text" id="setting-college" class="form-control">
+            </div>
+
+            <h3 class="section-title" style="margin: 24px 0 16px;">Daily Study Constraints</h3>
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label" for="setting-daily-hours">Daily Available Study Hours *</label>
+                <input type="number" step="0.5" min="0.5" max="16" id="setting-daily-hours" class="form-control" required>
+                <div class="form-hint">The scheduler strictly respects this maximum capacity per day.</div>
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="setting-break-duration">Standard Break Duration (Minutes)</label>
+                <select id="setting-break-duration" class="form-control">
+                  <option value="5">5 Minutes</option>
+                  <option value="10" selected>10 Minutes</option>
+                  <option value="15">15 Minutes</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label" for="setting-start-time">Preferred Study Start Time</label>
+                <input type="time" id="setting-start-time" class="form-control">
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="setting-end-time">Preferred Study End Time</label>
+                <input type="time" id="setting-end-time" class="form-control">
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="setting-focus-duration">Default Pomodoro Focus Interval</label>
+              <select id="setting-focus-duration" class="form-control">
+                <option value="25" selected>25 Minutes (Standard Pomodoro)</option>
+                <option value="50">50 Minutes (Deep Work Session)</option>
+              </select>
+            </div>
+
+            <div style="margin-top: 24px;">
+              <button type="submit" class="btn btn-primary">
+                💾 Save Settings & Update Capacity
+              </button>
+            </div>
+          </form>
+
+          <!-- Data Management Controls -->
+          <div class="card">
+            <h3 class="section-title" style="margin-bottom: 16px;">Data & Backup Controls</h3>
+            <p class="header-subtitle" style="margin-bottom: 18px;">
+              All data is persisted in your browser's LocalStorage. You can export a JSON backup, restore from JSON, or reload demo tasks.
+            </p>
+            <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+              <button class="btn btn-outline btn-action-demo-data">
+                📥 Reload College Demo Data
+              </button>
+              <button class="btn btn-outline" id="btn-export-data">
+                📤 Export Data JSON
+              </button>
+              <label class="btn btn-outline" style="cursor: pointer;">
+                📥 Import Data JSON
+                <input type="file" id="input-import-data" accept=".json" style="display: none;">
+              </label>
+              <button class="btn btn-ghost text-danger btn-action-clear-data">
+                🗑️ Clear All Data
+              </button>
+            </div>
+          </div>
+        </section>
+
+      </main>
+    </div>
+  </div>
+
+  <!-- ==================================================
+       MODAL: ONBOARDING SETUP WIZARD
+  ================================================== -->
+  <div class="wizard-overlay hidden" id="modal-onboarding">
+    <div class="wizard-card">
+      <div class="wizard-header">
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <span style="font-size: 24px;">⚡</span>
+          <strong style="font-size: 1.1rem;">StudyFlow AI Setup</strong>
+        </div>
+        <div class="wizard-steps-indicator">
+          <div class="step-dot active"></div>
+          <div class="step-dot"></div>
+          <div class="step-dot"></div>
+          <div class="step-dot"></div>
+          <div class="step-dot"></div>
+          <div class="step-dot"></div>
+        </div>
+      </div>
+
+      <div class="wizard-body">
+        <!-- Step 1: Name -->
+        <div class="wizard-step active" data-step="1">
+          <h3>Welcome! What is your name?</h3>
+          <p>StudyFlow AI will personalize your study workspace and daily greetings.</p>
+          <div class="form-group">
+            <input type="text" id="onboard-name" class="form-control" value="Aarav Sharma" placeholder="e.g. Aarav Sharma" required>
+          </div>
+        </div>
+
+        <!-- Step 2: Course -->
+        <div class="wizard-step" data-step="2">
+          <h3>What program are you studying?</h3>
+          <p>Helps tailor course workload defaults and schedule recommendations.</p>
+          <div class="form-group">
+            <input type="text" id="onboard-course" class="form-control" value="B.Tech Computer Science" placeholder="e.g. B.Tech Computer Science">
+          </div>
+        </div>
+
+        <!-- Step 3: Daily Hours -->
+        <div class="wizard-step" data-step="3">
+          <h3>How many study hours can you realistically commit each day?</h3>
+          <p>We strictly enforce this limit to prevent unrealistic overload schedules.</p>
+          <div class="form-group">
+            <input type="number" id="onboard-hours" class="form-control" value="4.0" step="0.5" min="1" max="16">
+          </div>
+        </div>
+
+        <!-- Step 4: Start Time -->
+        <div class="wizard-step" data-step="4">
+          <h3>Preferred study start time?</h3>
+          <p>The time you typically sit down for focused academic study.</p>
+          <div class="form-group">
+            <input type="time" id="onboard-start" class="form-control" value="17:00">
+          </div>
+        </div>
+
+        <!-- Step 5: End Time -->
+        <div class="wizard-step" data-step="5">
+          <h3>Preferred study end time?</h3>
+          <p>Latest time you want study blocks scheduled before bedtime.</p>
+          <div class="form-group">
+            <input type="time" id="onboard-end" class="form-control" value="22:00">
+          </div>
+        </div>
+
+        <!-- Step 6: Subjects Review -->
+        <div class="wizard-step" data-step="6">
+          <h3>Ready to build your workspace!</h3>
+          <p>We have pre-configured core computer science subjects and realistic demo assignments.</p>
+          <div class="empty-hint" style="text-align: left; padding: 12px; background: var(--color-bg-app); border-radius: 8px;">
+            ✓ Data Structures • DBMS • Operating Systems • Computer Networks • Web Technology
+          </div>
+        </div>
+      </div>
+
+      <div class="wizard-footer">
+        <button type="button" class="btn btn-ghost" id="btn-wizard-skip">Skip & Load Demo Data</button>
+        <div style="display: flex; gap: 8px;">
+          <button type="button" class="btn btn-outline" id="btn-wizard-prev" style="visibility: hidden;">← Back</button>
+          <button type="button" class="btn btn-primary" id="btn-wizard-next">Next →</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================================================
+       MODAL: ADD / EDIT TASK
+  ================================================== -->
+  <div class="modal-overlay hidden" id="modal-task">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 id="modal-task-title">Add Academic Task</h3>
+        <button class="modal-close-btn" aria-label="Close modal">&times;</button>
+      </div>
+      <form id="form-task">
+        <div class="modal-body">
+          <div id="task-error-alert" class="badge badge-critical hidden" style="margin-bottom: 12px; padding: 8px 12px; width: 100%;"></div>
+
+          <div class="form-group">
+            <label class="form-label" for="task-input-title">Task Title *</label>
+            <input type="text" id="task-input-title" class="form-control" placeholder="e.g. Mathematics Assignment" required>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label" for="task-input-subject">Subject *</label>
+              <select id="task-input-subject" class="form-control" required></select>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="task-input-type">Task Type *</label>
+              <select id="task-input-type" class="form-control">
+                <option value="Assignment">Assignment</option>
+                <option value="Exam">Exam</option>
+                <option value="Project">Project</option>
+                <option value="Lab">Lab</option>
+                <option value="Revision">Revision</option>
+                <option value="Presentation">Presentation</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label" for="task-input-deadline">Due Date & Time *</label>
+              <input type="datetime-local" id="task-input-deadline" class="form-control" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="task-input-effort">Estimated Hours *</label>
+              <input type="number" step="0.5" min="0.5" max="24" id="task-input-effort" class="form-control" value="2.0" required>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label" for="task-input-difficulty">Difficulty</label>
+              <select id="task-input-difficulty" class="form-control">
+                <option value="Easy">Easy</option>
+                <option value="Medium" selected>Medium</option>
+                <option value="Hard">Hard</option>
+                <option value="Very Hard">Very Hard</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="task-input-importance">Academic Importance</label>
+              <select id="task-input-importance" class="form-control">
+                <option value="Low">Low</option>
+                <option value="Medium">Medium</option>
+                <option value="High" selected>High</option>
+                <option value="Critical">Critical</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="task-input-notes">Notes & Deliverables (Optional)</label>
+            <textarea id="task-input-notes" class="form-control" rows="2" placeholder="e.g. Problems 1 to 5, submit on classroom, review chapter 3"></textarea>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline modal-close-btn">Cancel</button>
+          <button type="submit" class="btn btn-primary" id="btn-save-task">Add Task</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ==================================================
+       MODAL: ADD / EDIT SUBJECT
+  ================================================== -->
+  <div class="modal-overlay hidden" id="modal-subject">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 id="modal-subject-title">Add Academic Subject</h3>
+        <button class="modal-close-btn" aria-label="Close modal">&times;</button>
+      </div>
+      <form id="form-subject">
+        <div class="modal-body">
+          <div id="subject-error-alert" class="badge badge-critical hidden" style="margin-bottom: 12px; padding: 8px 12px; width: 100%;"></div>
+
+          <div class="form-group">
+            <label class="form-label" for="subject-input-name">Subject Name *</label>
+            <input type="text" id="subject-input-name" class="form-control" placeholder="e.g. Computer Networks" required>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label" for="subject-input-code">Subject Code</label>
+              <input type="text" id="subject-input-code" class="form-control" placeholder="e.g. CS204">
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="subject-input-teacher">Teacher / Faculty Name</label>
+              <input type="text" id="subject-input-teacher" class="form-control" placeholder="e.g. Dr. K. Murthy">
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label" for="subject-input-target">Weekly Study Target (Hours)</label>
+              <input type="number" step="0.5" min="0.5" max="40" id="subject-input-target" class="form-control" value="4.0" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="subject-input-difficulty">Subject Difficulty</label>
+              <select id="subject-input-difficulty" class="form-control">
+                <option value="Easy">Easy</option>
+                <option value="Medium" selected>Medium</option>
+                <option value="Hard">Hard</option>
+                <option value="Very Hard">Very Hard</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Subject Accent Color</label>
+            <input type="hidden" id="subject-input-color" value="#6366f1">
+            <div class="subject-color-picker-row" id="subject-color-swatches"></div>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline modal-close-btn">Cancel</button>
+          <button type="submit" class="btn btn-primary" id="btn-save-subject">Save Subject</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ==================================================
+       MODAL: AI ASSISTANT DRAWER
+  ================================================== -->
+  <div class="modal-overlay hidden" id="modal-ai-assistant">
+    <div class="modal-content" style="max-width: 520px;">
+      <div class="modal-header">
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <span style="font-size: 22px;">🧠</span>
+          <h3>StudyFlow AI Assistant</h3>
+        </div>
+        <button class="modal-close-btn" aria-label="Close modal">&times;</button>
+      </div>
+
+      <div class="modal-body" style="padding: 16px;">
+        <div class="ai-assistant-card" style="border: none; padding: 0; box-shadow: none; height: 380px;">
+          <div class="ai-chat-messages" id="ai-chat-messages">
+            <div class="chat-bubble chat-bubble-bot">
+              Hello! I am your <strong>StudyFlow AI Assistant</strong>. I analyze your deadlines, estimated hours, and available capacity in real time. How can I help with your study plan?
+            </div>
+          </div>
+
+          <!-- Quick Prompt Chips -->
+          <div class="ai-quick-chips">
+            <button class="quick-chip" data-prompt="What should I study first?">What should I study first?</button>
+            <button class="quick-chip" data-prompt="Am I overloaded?">Am I overloaded?</button>
+            <button class="quick-chip" data-prompt="How should I study today?">How should I study today?</button>
+            <button class="quick-chip" data-prompt="How much time do I need?">How much time do I need?</button>
+          </div>
+
+          <div class="ai-chat-input-row">
+            <input type="text" id="ai-chat-input" class="ai-chat-input" placeholder="Ask anything about your study plan...">
+            <button class="btn btn-primary btn-sm" id="btn-ai-chat-send">Send</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================================================
+       MODAL: RESCHEDULE DIFF
+  ================================================== -->
+  <div class="modal-overlay hidden" id="modal-reschedule-diff">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>↻ Reschedule My Day — Changes Made</h3>
+        <button class="modal-close-btn" aria-label="Close modal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="schedule-ai-banner" style="margin-bottom: 16px;">
+          <span style="font-size: 24px;">🧠</span>
+          <div id="diff-explanation-text">
+            Your schedule has been realigned based on current time and available capacity.
+          </div>
+        </div>
+        <h4 style="font-size: 0.95rem; font-weight: 700; margin-bottom: 8px;">Adjusted Deliverables:</h4>
+        <ul id="diff-moved-list" style="padding-left: 20px; font-size: 0.86rem; color: var(--color-text-muted); display: flex; flex-direction: column; gap: 6px;"></ul>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary modal-close-btn">Understood, Open Schedule</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================================================
+       MODAL: DELETE TASK CONFIRMATION
+  ================================================== -->
+  <div class="modal-overlay hidden" id="modal-delete-task">
+    <div class="modal-content" style="max-width: 420px;">
+      <div class="modal-header">
+        <h3>Delete Task?</h3>
+        <button class="modal-close-btn" aria-label="Close modal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p>Are you sure you want to delete <strong id="delete-task-title">this task</strong>?</p>
+        <p class="form-hint" style="margin-top: 8px;">This will remove the item from active priority rankings and schedule allocations.</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline modal-close-btn">Cancel</button>
+        <button type="button" class="btn btn-primary text-danger" id="btn-confirm-delete-task" style="background: #fee2e2; border-color: #fca5a5;">
+          Delete Task
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================================================
+       MODAL: DELETE SUBJECT CONFIRMATION
+  ================================================== -->
+  <div class="modal-overlay hidden" id="modal-delete-subject">
+    <div class="modal-content" style="max-width: 420px;">
+      <div class="modal-header">
+        <h3>Delete Subject?</h3>
+        <button class="modal-close-btn" aria-label="Close modal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p>Are you sure you want to delete <strong id="delete-subject-title">this subject</strong>?</p>
+        <p class="form-hint" style="margin-top: 8px;">Existing tasks will retain their subject name tag unless reassigned.</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline modal-close-btn">Cancel</button>
+        <button type="button" class="btn btn-primary text-danger" id="btn-confirm-delete-subject" style="background: #fee2e2; border-color: #fca5a5;">
+          Delete Subject
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification Popup -->
+  <div id="app-toast" class="toast">Action completed</div>
+
+  <!-- Application Bootstrap -->
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>
